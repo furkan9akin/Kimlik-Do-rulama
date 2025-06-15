@@ -36,6 +36,26 @@ def test_add_new_user(setup_database, connection):
     user = cursor.fetchone()
     assert user, "Kullanıcı veri tabanına eklenmiş olmalıdır."
 
+def test_add_existing_user(setup_database):
+    add_user('u', 'e1', 'p1')
+    assert not add_user('u', 'e2', 'p2')
+
+def test_authenticate_success(setup_database):
+    add_user('u2', 'e', 'p')
+    assert authenticate_user('u2', 'p')
+
+def test_authenticate_nonexistent_user(setup_database):
+    assert not authenticate_user('x', 'y')
+
+def test_authenticate_wrong_password(setup_database):
+    add_user('u3', 'e', 'correct')
+    assert not authenticate_user('u3', 'wrong')
+
+def test_display_users_output(capsys, setup_database):
+    add_user('u4', 'e', 'p')
+    display_users()
+    assert 'u4' in capsys.readouterr().out
+
 # İşte yazabileceğiniz bazı testler:
 """
 Var olan bir kullanıcı adıyla kullanıcı eklemeye çalışmayı test etme.
